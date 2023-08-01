@@ -23,9 +23,9 @@ public class Main {
 
         try {
             System.out.print("Enter your option: ");
-            int age = Integer.parseInt(reader.readLine()); // Read an integer input from the terminal
+            int option = Integer.parseInt(reader.readLine()); // Read an integer input from the terminal
 
-            switch (age){
+            switch (option){
                 case 1:
                     saveBook();
                     break;
@@ -51,6 +51,34 @@ public class Main {
     }
 
     private static void searchBook() {
+        System.out.println("Search Book");
+        System.out.println("===========");
+
+        try {
+            System.out.println("Enter the book id to search: ");
+            String bookId = reader.readLine();
+
+            Session session = FactoryConfiguration.getInstance().getSession();
+            Transaction transaction = session.beginTransaction();
+
+            try {
+                Book book = session.get(Book.class, bookId);
+                if (book != null) {
+                    System.out.println("Book id : "+book.getBookId());
+                    System.out.println("Book name : "+book.getName());
+                    System.out.println("Book price : "+book.getPrice());
+                } else {
+                    System.out.println("Book with ID " + bookId + " not found.");
+                }
+            } catch (Exception e) {
+                transaction.rollback();
+                System.out.println("Failed to delete the book. Error: " + e.getMessage());
+            } finally {
+                session.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void deleteBook() {
