@@ -57,6 +57,43 @@ public class Main {
     }
 
     private static void updateBook() {
+        System.out.println("Update Book");
+        System.out.println("=========");
+        String bookId = null;
+        String bookName = null;
+        double price = 0;
+
+        try {
+            System.out.println("Enter the book id : ");
+            bookId = reader.readLine();
+
+            System.out.println("Enter the book name : ");
+            bookName = reader.readLine();
+
+            System.out.println("Enter the book price : ");
+            price = Double.parseDouble(reader.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid price.");
+            System.exit(0);
+        }
+
+        Book book = new Book(bookId,bookName,price);
+
+        Session session = FactoryConfiguration.getInstance().getSession();
+        Transaction transaction = session.beginTransaction();
+
+        try {
+            session.merge(book);
+            transaction.commit();
+            System.out.println("Book updated successfully!");
+        } catch (Exception e) {
+            transaction.rollback();
+            System.out.println("Failed to update the book. Error: " + e.getMessage());
+        } finally {
+            session.close();
+        }
     }
 
     private static void saveBook() {
@@ -79,6 +116,7 @@ public class Main {
             e.printStackTrace();
         }catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid price.");
+            System.exit(0);
         }
 
         Book book = new Book(bookId,bookName,price);
