@@ -54,6 +54,34 @@ public class Main {
     }
 
     private static void deleteBook() {
+        System.out.println("Delete Book");
+        System.out.println("===========");
+
+        try {
+            System.out.println("Enter the book id to delete: ");
+            String bookId = reader.readLine();
+
+            Session session = FactoryConfiguration.getInstance().getSession();
+            Transaction transaction = session.beginTransaction();
+
+            try {
+                Book book = session.get(Book.class, bookId);
+                if (book != null) {
+                    session.remove(book);
+                    transaction.commit();
+                    System.out.println("Book with ID " + bookId + " deleted successfully!");
+                } else {
+                    System.out.println("Book with ID " + bookId + " not found.");
+                }
+            } catch (Exception e) {
+                transaction.rollback();
+                System.out.println("Failed to delete the book. Error: " + e.getMessage());
+            } finally {
+                session.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void updateBook() {
